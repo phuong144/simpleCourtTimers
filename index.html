@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Court Timers</title>
+  <style>
+    body {
+      text-align: center;
+      justify-content: center;
+    }
+
+    table {
+      border: 2px solid black;
+      border-collapse: collapse;
+      justify-content: center;
+      margin-left: auto;
+      margin-right: auto;
+      width: 50%;
+    }
+
+    tr {
+      background-color: lightgray;
+    }
+
+    th,
+    td {
+      border: 1px solid black;
+      padding: 5px;
+      text-align: center;
+      background-color: none;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Badminton Court Timers</h2>
+  <table id="table">
+    <tr>
+      <th>Court</th>
+      <th>Status</th>
+      <th>Timer</th>
+    </tr>
+  </table>
+  <script>
+    const timerD = {};
+
+    function populateTable() {
+      const table = document.getElementById("table");
+      for (let i = 1; i <= 18; i++) {
+        let newRow = table.insertRow(i);
+        newRow.id = 'row' + i;
+        newRow.style.backgroundColor = "green";
+        newRow.insertCell(0).innerHTML = "Court " + i;
+
+        let statusElem = newRow.insertCell(1);
+        statusElem.innerHTML = `Available`;
+        statusElem.id = "status" + i;
+
+        let timerElem = newRow.insertCell(2);
+        timerElem.innerHTML = `5:00`;
+        timerElem.id = "timer" + i;
+
+        newRow.insertCell(3).innerHTML = `<button onClick="timer('${i}')">Start</button>`;
+        newRow.insertCell(4).innerHTML = `<button onClick="reset('${i}')">Reset</button>`;
+      }
+    }
+
+    function reset(id) {
+      document.getElementById('status' + id).innerHTML = "Available";
+      clearInterval(timerD[id]);
+      document.getElementById('timer' + id).innerHTML = "5:00";
+      document.getElementById('row' + id).style.backgroundColor = "green";
+    }
+
+    function timer(id) {
+      const startingMin = 5;
+      let time = startingMin * 60;
+      document.getElementById('status' + id).innerHTML = "Warming Up";
+      document.getElementById('row' + id).style.backgroundColor = "yellow";
+      var downloadTimer = setInterval(function function1() {
+        const minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        document.getElementById('timer' + id).innerHTML = `${minutes}:${seconds}`;
+        time -= 1;
+        if (time < 0) {
+          clearInterval(downloadTimer);
+          document.getElementById('status' + id).innerHTML = "In Game";
+          document.getElementById('row' + id).style.backgroundColor = "red";
+        }
+      }, 1000);
+      timerD[id] = downloadTimer;
+    }
+
+    window.onload = populateTable();
+
+
+    /*
+    References
+    Programmatically insert table data - https://stackoverflow.com/questions/57281241/how-do-i-formulate-my-for-loop-code-to-insert-values-in-specific-html-table-cell
+    Timer skeleton - https://www.youtube.com/watch?v=x7WJEmxNlEs&ab_channel=FlorinPop && https://stackoverflow.com/questions/54637148/how-to-add-onclick-event-to-start-timer
+    */
+  </script>
+</body>
+
+</html>
