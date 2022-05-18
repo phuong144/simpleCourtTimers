@@ -33,6 +33,7 @@
       background-color: none;
     }
   </style>
+  <script src="./HackerTimer.js"></script>
 </head>
 
 <body>
@@ -45,7 +46,9 @@
     </tr>
   </table>
   <script>
+
     const timerD = {};
+    const stopWatchD = {};
 
     function populateTable() {
       const table = document.getElementById("table");
@@ -60,7 +63,7 @@
         statusElem.id = "status" + i;
 
         let timerElem = newRow.insertCell(2);
-        timerElem.innerHTML = `5:00`;
+        timerElem.innerHTML = `3:00`;
         timerElem.id = "timer" + i;
 
         newRow.insertCell(3).innerHTML = `<button onClick="timer('${i}')">Start</button>`;
@@ -71,16 +74,17 @@
     function reset(id) {
       document.getElementById('status' + id).innerHTML = "Available";
       clearInterval(timerD[id]);
-      document.getElementById('timer' + id).innerHTML = "5:00";
+      clearInterval(stopWatchD[id]);
+      document.getElementById('timer' + id).innerHTML = "3:00";
       document.getElementById('row' + id).style.backgroundColor = "green";
     }
 
     function timer(id) {
-      const startingMin = 5;
+      const startingMin = 3;
       let time = startingMin * 60;
       document.getElementById('status' + id).innerHTML = "Warming Up";
       document.getElementById('row' + id).style.backgroundColor = "yellow";
-      var downloadTimer = setInterval(function function1() {
+      var timerRef = setInterval(function function1() {
         const minutes = Math.floor(time / 60);
         let seconds = time % 60;
         seconds = seconds < 10 ? '0' + seconds : seconds;
@@ -88,21 +92,43 @@
         document.getElementById('timer' + id).innerHTML = `${minutes}:${seconds}`;
         time -= 1;
         if (time < 0) {
-          clearInterval(downloadTimer);
-          document.getElementById('status' + id).innerHTML = "In Game";
-          document.getElementById('row' + id).style.backgroundColor = "red";
+          clearInterval(timerRef);
+          stopWatch(id)
         }
       }, 1000);
-      timerD[id] = downloadTimer;
+      timerD[id] = timerRef;
+    }
+
+    function stopWatch(id) {
+      const startingMin = 0;
+      let time = 0;
+      document.getElementById('status' + id).innerHTML = "In Game";
+      document.getElementById('row' + id).style.backgroundColor = "red";
+      var stopWatchRef = setInterval(function function1() {
+        const minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        document.getElementById('timer' + id).innerHTML = `${minutes}:${seconds}`;
+        time += 1;
+        if (time >= 1200) {
+          clearInterval(stopWatchRef);
+          document.getElementById('status' + id).innerHTML = "Check Status";
+          document.getElementById('row' + id).style.backgroundColor = "orange";
+        }
+      }, 1000);
+      stopWatchD[id] = stopWatchRef;
+
     }
 
     window.onload = populateTable();
-
 
     /*
     References
     Programmatically insert table data - https://stackoverflow.com/questions/57281241/how-do-i-formulate-my-for-loop-code-to-insert-values-in-specific-html-table-cell
     Timer skeleton - https://www.youtube.com/watch?v=x7WJEmxNlEs&ab_channel=FlorinPop && https://stackoverflow.com/questions/54637148/how-to-add-onclick-event-to-start-timer
+    Inactive Tab Timers - https://stackoverflow.com/questions/5927284/how-can-i-make-setinterval-also-work-when-a-tab-is-inactive-in-chrome
+    HackerTimer.js - https://github.com/turuslan/HackTimer
     */
   </script>
 </body>
